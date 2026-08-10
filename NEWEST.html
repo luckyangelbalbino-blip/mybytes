@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuckyBytes — Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Reset & Variables */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg-color: #0d0f12;
+            --bg-card: rgba(22, 25, 32, 0.65);
+            --text-main: #f0f2f5;
+            --text-muted: #a0a6b5;
+            --border-color: rgba(255, 255, 255, 0.12);
+            --accent-warm: #f4c172;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            font-weight: 300;
+            -webkit-font-smoothing: antialiased;
+            position: relative;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Background Photo Collage Container */
+        .bg-collage-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -2;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        /* Grid layout for background photos */
+        .bg-collage-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 15px;
+            width: 110vw;
+            height: 110vh;
+            margin: -5vh 0 0 -5vw;
+            transform: rotate(-3deg) scale(1.05); /* Slight dynamic rotation */
+        }
+
+        .bg-collage-item {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .bg-collage-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(80%) brightness(0.4) contrast(1.1);
+            transition: var(--transition);
+        }
+
+        /* Dark Overlay to make content readable over collage */
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(
+                135deg, 
+                rgba(13, 15, 18, 0.88) 0%, 
+                rgba(13, 15, 18, 0.75) 50%, 
+                rgba(13, 15, 18, 0.92) 100%
+            );
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        /* Layout Container */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header & Navigation */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(13, 15, 18, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        nav {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            height: 80px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            position: relative;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-main);
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background-color: var(--accent-warm);
+        }
+
+        /* Sections General */
+        section {
+            padding: 120px 0 80px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        section:last-of-type {
+            border-bottom: none;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--accent-warm);
+            margin-bottom: 3rem;
+            font-weight: 500;
+        }
+
+        /* 1. Home / Intro Section */
+        #home {
+            min-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-top: 100px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(244, 193, 114, 0.1);
+            border: 1px solid rgba(244, 193, 114, 0.3);
+            color: var(--accent-warm);
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+            width: fit-content;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #4caf50;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #4caf50;
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 5vw, 3.8rem);
+            font-weight: 300;
+            line-height: 1.2;
+            letter-spacing: -0.03em;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: var(--accent-warm);
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 1.8rem;
+            border-left: 2px solid var(--accent-warm);
+            padding-left: 1rem;
+        }
+
+        .hero-description, .hero-description-secondary {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            max-width: 750px;
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
+
+        .hero-description-secondary {
+            margin-bottom: 2.5rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.8rem;
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 400;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            backdrop-filter: blur(4px);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn:hover {
+            background: var(--text-main);
+            color: var(--bg-color);
+            border-color: var(--text-main);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        /* 2. Selected Work Section */
+        .work-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 3rem;
+        }
+
+        .work-item {
+            cursor: pointer;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: var(--transition);
+        }
+
+        .work-item:hover {
+            border-color: rgba(244, 193, 114, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .work-img-wrapper {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background-color: #1a1d24;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 1.2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .work-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(40%) brightness(0.9);
+            transition: var(--transition);
+        }
+
+        .work-item:hover .work-img-wrapper img {
+            filter: grayscale(0%) brightness(1);
+            transform: scale(1.02);
+        }
+
+        .work-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .work-category {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* 3. About Website Section */
+        .about-site-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 2.5rem;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .about-site-card p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
+
+        .about-site-card p:last-child {
+            margin-bottom: 0;
+        }
+
+        .tech-stack-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1.5rem;
+        }
+
+        .tech-tag {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--accent-warm);
+        }
+
+        /* 4. Social Proof & Credibility Section */
+        .credibility-container {
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+        }
+
+        .cred-block-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        /* Testimonials */
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .testimonial-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 1.8rem;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .testimonial-quote {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-style: italic;
+            line-height: 1.6;
+            margin-bottom: 1.2rem;
+        }
+
+        .testimonial-author {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--accent-warm);
+        }
+
+        .testimonial-role {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Logos Row */
+        .logo-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .logo-badge {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: var(--transition);
+        }
+
+        .logo-badge:hover {
+            color: var(--text-main);
+            border-color: rgba(244, 193, 114, 0.4);
+        }
+
+        /* Features / Press List */
+        .press-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .press-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 1.2rem 1.5rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .press-title {
+            font-size: 0.95rem;
+            font-weight: 400;
+        }
+
+        .press-tag {
+            font-size: 0.8rem;
+            color: var(--accent-warm);
+            border: 1px solid var(--border-color);
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+        }
+
+        /* 5. Info & Contact Section */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+        }
+
+        .info-text p {
+            margin-bottom: 1.5rem;
+            color: var(--text-muted);
+            font-size: 1.05rem;
+        }
+
+        .contact-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .contact-link-item {
+            font-size: 1.2rem;
+            font-weight: 400;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .contact-link-item:hover {
+            color: var(--accent-warm);
+            transform: translateX(5px);
+        }
+
+        /* Footer */
+        footer {
+            padding: 40px 0;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .bg-collage-grid {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(4, 1fr);
+            }
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            .nav-links {
+                gap: 1rem;
+            }
+            .press-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            .hero-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Collage Layer -->
+    <div class="bg-collage-container">
+        <div class="bg-collage-grid">
+            <div class="bg-collage-item"><img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=800" alt="Work space"></div>
+            <div class="bg-collage-item"><img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800" alt="Code"></div>
+            <div class="bg-collage-item"><img src="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=800" alt="Tech"></div>
+            <div class="bg-collage-item"><img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=800" alt="Teamwork"></div>
+            <div class="bg-collage-item"><img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800" alt="Analytics"></div>
+            <div class="bg-collage-item"><img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=800" alt="Developer"></div>
+            <div class="bg-collage-item"><img src="https://images.unsplash.com/photo-1531403009284-440f080d1e12?q=80&w=800" alt="Design"></div>
+            <div class="bg-collage-item"><img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800" alt="Network"></div>
+        </div>
+    </div>
+
+    <!-- Dark Overlay for Contrast -->
+    <div class="bg-overlay"></div>
+
+    <!-- Header & Nav -->
+    <header>
+        <div class="container">
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#home" class="nav-link active">Home</a></li>
+                    <li><a href="#work" class="nav-link">Work</a></li>
+                    <li><a href="#about-site" class="nav-link">About Website</a></li>
+                    <li><a href="#credibility" class="nav-link">Credibility</a></li>
+                    <li><a href="#info" class="nav-link">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <!-- 1. Above-the-Fold Hero Section -->
+        <section id="home">
+            <div class="hero-badge">
+                <span class="pulse-dot"></span> Open for Internships, Freelance Projects & Collaborations
+            </div>
+            
+            <h1 class="hero-title">Lucky Angel D. Balbino</h1>
+            <p class="hero-subtitle">Just a student with a big dream</p>
+
+            <div class="hero-meta">
+                <div><strong>Location:</strong> Brgy. Hagdan Bato Libis, Mandaluyong City | Taytay, Rizal</div>
+                <div><strong>Time Zone:</strong> GMT+8 (PHT)</div>
+            </div>
+
+            <p class="hero-description">I am an Information Systems student focused on leveraging technology to drive real-world business growth, streamline operational efficiency, and generate scalable revenue.</p>
+            <p class="hero-description-secondary">Rather than viewing tech in isolation, I treat information systems as strategic assets. My passion lies in analyzing business problems, designing data-driven solutions, and turning operational bottlenecks into profitable digital workflows—whether through automated systems, cloud integration, or web-based platforms that deliver measurable ROI.</p>
+
+            <div>
+                <a href="#work" class="btn">Explore Selected Work</a>
+            </div>
+        </section>
+
+        <!-- 2. Selected Work -->
+        <section id="work">
+            <h2 class="section-title">01 / Selected Work</h2>
+            <div class="work-grid">
+                
+                <!-- Project 1 -->
+                <div class="work-item">
+                    <div class="work-img-wrapper">
+                        <img src="Myprofile.png" alt="Profile Work">
+                    </div>
+                    <h3 class="work-title">Bridging Tech & Business | Science in Information Systems</h3>
+                    <p class="work-category">Driven 3rd-year Bachelor of Science in Information Systems scholar with a passion for connecting complex technology with strategic business goals. Experience in analyzing workflows, managing data, and leveraging modern software solutions to optimize operations, improve decision making, and drive efficiency.</p>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="work-item">
+                    <div class="work-img-wrapper">
+                        <img src="mywork.png" alt="Data Management Work">
+                    </div>
+                    <h3 class="work-title">Data Management & Analytics</h3>
+                    <p class="work-category">Turning raw data into actionable business intelligence.</p>
+                    <p class="Analytics" style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.5rem;"> Extracting insights, structuring databases, and driving data-informed decisions. Transforming complex datasets into clear, decision-ready insights.</p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 3. About Website -->
+        <section id="about-site">
+            <h2 class="section-title">02 / About Website</h2>
+            <div class="about-site-card">
+                <p>This digital portfolio is designed as a minimalist, dark-themed personal folder reflecting a balance between technical structure and modern design aesthetics. Built with performance and responsiveness in mind, it features custom CSS backdrop blurring and a subtle background imagery grid.</p>
+                <p>It serves as an interactive hub highlighting academic milestones, projects, technical skills, and professional connections in the Information Systems domain.</p>
+                
+                <div class="tech-stack-list">
+                    <span class="tech-tag">HTML5</span>
+                    <span class="tech-tag">CSS3 (Grid & Flexbox)</span>
+                    <span class="tech-tag">JavaScript (ES6+)</span>
+                    <span class="tech-tag">Responsive Web Design</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Social Proof & Credibility -->
+        <section id="credibility">
+            <h2 class="section-title">03 / Social Proof & Credibility</h2>
+            <div class="credibility-container">
+                
+                <!-- Testimonials -->
+                <div>
+                    <h3 class="cred-block-title">Testimonials</h3>
+                    <div class="testimonials-grid">
+                        <div class="testimonial-card">
+                            <p class="testimonial-quote">"Lucky consistently demonstrates a high degree of analytical thinking and reliability. An asset to any technical workflow optimization effort."</p>
+                            <div>
+                                <div class="testimonial-author">Academic Lead / Supervisor</div>
+                                <div class="testimonial-role">Information Systems Department</div>
+                            </div>
+                        </div>
+                        <div class="testimonial-card">
+                            <p class="testimonial-quote">"Exceptional drive and attention to detail. Able to break down complex system requirements into clear, actionable deliverables."</p>
+                            <div>
+                                <div class="testimonial-author">Project Team Collaborator</div>
+                                <div class="testimonial-role">Systems Analytics Group</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Client / Company Logos -->
+                <div>
+                    <h3 class="cred-block-title">Key Organizations & Projects</h3>
+                    <div class="logo-row">
+                        <div class="logo-badge">IS Academic Research</div>
+                        <div class="logo-badge">Data Solutions Initiative</div>
+                        <div class="logo-badge">Workflow Automation Project</div>
+                    </div>
+                </div>
+
+                <!-- Press or Features -->
+                <div>
+                    <h3 class="cred-block-title">Press & Highlights</h3>
+                    <div class="press-list">
+                        <div class="press-item">
+                            <span class="press-title">BSIS Scholar Academic Recognition</span>
+                            <span class="press-tag">Award</span>
+                        </div>
+                        <div class="press-item">
+                            <span class="press-title">Information Systems Strategy & Analytics Seminar Speaker</span>
+                            <span class="press-tag">Talk</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 5. Info & Contact -->
+        <section id="info">
+            <h2 class="section-title">04 / Info & Contact</h2>
+            <div class="info-grid">
+                <div class="info-text">
+                    <p>Always open to discussing tech-driven business strategies, scalable digital solutions, or cross-functional growth opportunities. Let's connect and bridge the gap between technical execution and business value.</p>
+                    <p>Let's connect and build something impactful together.</p>
+                </div>
+                <div class="contact-links">
+                    <a href="mailto:balbinolucky21@gmail.com" class="contact-link-item">balbinolucky21@gmail.com &rarr;</a>
+                    <a href="https://www.facebook.com/BuffmeKai" target="_blank" class="contact-link-item">LA Balbino &rarr;</a>
+                    <a href="https://t.me/Kailovesiomai" target="_blank" class="contact-link-item">t.me/Kailovesiomai &rarr;</a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Lucky Angel D. Balbino. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Interactivity -->
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Highlight active nav link on scroll
+        const sections = document.querySelectorAll('section, #home');
+        const navLinks = document.querySelectorAll('.nav-links a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= (sectionTop - 150)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
